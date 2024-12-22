@@ -34,6 +34,7 @@ exports[`class parser can parse class label 1`] = `
 
 exports[`class parser can parse methods and fields 1`] = `
 {
+  "bindRules": [],
   "classes": {
     "C1": {
       "annotation": "",
@@ -72,6 +73,7 @@ exports[`class parser can parse methods and fields 1`] = `
   "notes": [],
   "overrideConfig": {},
   "relations": [],
+  "styleRules": [],
   "title": "",
 }
 `;

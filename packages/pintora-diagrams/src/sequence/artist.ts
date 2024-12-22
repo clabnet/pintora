@@ -4,7 +4,6 @@ import {
   GSymbol,
   GraphicsIR,
   Group,
-  IDiagramArtist,
   ITheme,
   Line,
   Mark,
@@ -35,6 +34,7 @@ import { ActivationData, LoopModel, MessageModel, SequenceDiagramBounds } from '
 import { SequenceConf, getConf } from './config'
 import { LINETYPE, Message, PLACEMENT, ParticipantBox, SequenceDiagramIR, WrappedText, db } from './db'
 import { getFontConfig } from '../util/font-config'
+import { BaseArtist } from '../util/base-artist'
 
 let conf: EnhancedConf<SequenceConf>
 let theme: ITheme
@@ -63,8 +63,8 @@ export type SequenceArtistContext = {
 
 const SHOW_NUMBER_CIRCLE_RADIUS = 8
 
-const sequenceArtist: IDiagramArtist<SequenceDiagramIR, SequenceConf> = {
-  draw(ir, config?, opts?) {
+class SequenceArtist extends BaseArtist<SequenceDiagramIR, SequenceConf> {
+  customDraw(ir: SequenceDiagramIR, config?: SequenceConf, opts?: any) {
     // console.log('[draw]', ir, config)
     conf = getConf(ir, config)
     theme = conf.themeConfig.themeVariables
@@ -279,8 +279,9 @@ const sequenceArtist: IDiagramArtist<SequenceDiagramIR, SequenceConf> = {
     }
 
     return graphicsIR
-  },
+  }
 }
+const sequenceArtist = new SequenceArtist()
 
 type OnBoundsFinishCallback = (opts: { bounds: SequenceDiagramBounds }) => void
 

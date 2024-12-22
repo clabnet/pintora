@@ -4,6 +4,7 @@
 @include "whitespace.ne"
 @include "config.ne"
 @include "comment.ne"
+@include "bind.ne"
 
 @{%
 import * as moo from '@hikerpig/moo'
@@ -64,12 +65,6 @@ let lexer = moo.states({
   }
 })
 
-let yy
-
-export function setYY(v) {
-  yy = v
-}
-
 function extractChildren(o) {
   return Array.isArray(o) ? o[0]: o
 }
@@ -120,6 +115,7 @@ statement ->
   | titleStatement
   | paramStatement _ %NL
   | configStatement _ %NL
+  | bindClassStatement
   | comment _ %NL {% null %}
 
 conditionSentence ->

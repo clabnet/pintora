@@ -1,6 +1,7 @@
 import { BaseDb } from '../util/base-db'
 import { BaseDiagramIR } from '../util/ir'
 import { OverrideConfigAction, ParamAction, SetTitleAction } from '../util/config'
+import { STYLE_ACTION_HANDLERS, type StylePayloads } from '../util/style-engine/parser'
 
 type Component = {
   name: string
@@ -8,12 +9,14 @@ type Component = {
   isGroup?: boolean
   children?: UMLElement[]
   parent?: string
+  itemId: string
 }
 
 type Interface = {
   name: string
   label?: string
   parent?: string
+  itemId: string
 }
 
 /** element group */
@@ -23,6 +26,7 @@ type CGroup = {
   label?: string
   children: UMLElement[]
   parent?: string
+  itemId: string
 }
 
 type ElementType = 'component' | 'interface' | 'group'
@@ -67,6 +71,9 @@ type ApplyPart =
       children: UMLElement[]
     }
   | SetTitleAction
+  | ({
+      type: 'bindClass'
+    } & StylePayloads['bindClass'])
 
 export type ComponentDiagramIR = BaseDiagramIR & {
   components: Record<string, Component>
@@ -93,6 +100,7 @@ class ComponentDb extends BaseDb {
 
   addComponent(name: string, comp: Component) {
     if (this.components[name]) return
+    comp.itemId = `node-${name}`
     // console.log(`[db] Add component: ${name}`, comp);
     this.components[name] = comp
     this.aliases[name] = comp
@@ -100,6 +108,7 @@ class ComponentDb extends BaseDb {
 
   addInterface(name: string, interf: Interface) {
     if (this.interfaces[name]) return
+    interf.itemId = `node-${name}`
     // console.log(`[db] Add interface: ${name}`, interf);
     this.interfaces[name] = interf
     this.aliases[name] = interf
@@ -107,6 +116,7 @@ class ComponentDb extends BaseDb {
 
   addGroup(name: string, group: CGroup) {
     if (this.groups[name]) return
+    group.itemId = `node-${name}`
     this.groups[name] = group
     this.aliases[name] = group
   }
@@ -133,6 +143,10 @@ class ComponentDb extends BaseDb {
       }
       case 'setTitle': {
         this.title = part.text
+        break
+      }
+      case 'bindClass': {
+        STYLE_ACTION_HANDLERS.bindClass.call(this, part)
         break
       }
       default: {

@@ -2,6 +2,7 @@ import { makeIdCounter } from '@pintora/core'
 import { BaseDb } from '../util/base-db'
 import { BaseDiagramIR } from '../util/ir'
 import { OverrideConfigAction, ParamAction, SetTitleAction } from '../util/config'
+import { STYLE_ACTION_HANDLERS, type StylePayloads } from '../util/style-engine/parser'
 
 export type LevelNotation = {
   depth: number
@@ -101,6 +102,7 @@ export type ApplyPart =
   | ParamAction
   | OverrideConfigAction
   | SetTitleAction
+  | ({ type: 'bindClass' } & StylePayloads['bindClass'])
   | {
       type: 'addItem'
       depth: number
@@ -167,6 +169,10 @@ class MindmapDb extends BaseDb {
       }
       case 'overrideConfig': {
         this.addOverrideConfig(part)
+        break
+      }
+      case 'bindClass': {
+        STYLE_ACTION_HANDLERS.bindClass.call(this, part)
         break
       }
     }
